@@ -28,3 +28,14 @@ export function getOneDepartDetail (id) {
     url: `/company/department/${id}`
   })
 }
+/**
+ * 编辑部门
+ *
+ * ***/
+export function updateDepartments (data) {
+  return request({
+    url: `/company/department/${data.id}`,
+    method: 'put',
+    data
+  })
+}

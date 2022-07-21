@@ -58,7 +58,7 @@
 
 <script>
 // 这里引入获取部门信息的api，是因为创建部门时，有可能别人也创建了部门，从而导致因为获取数据时差的问题，出现创建了已经存在了的部门
-import { getDepartments, addDepartments, getOneDepartDetail } from '@/api/departments'
+import { getDepartments, addDepartments, getOneDepartDetail, updateDepartments } from '@/api/departments'
 import { getSmployeesSimple } from '@/api/employees'
 export default {
   filters: {
@@ -77,17 +77,30 @@ export default {
   data () {
     // 设置一个部门名称的校验函数
     const checkNameRepeat = async (rule, value, callback) => {
+      let isRepeat = false
       // 对返回回来的部门信息进行结构，只需要数组
       const { depts } = await getDepartments()
+      if (this.formData.id) {
+        // 存在就说明是编辑模式
+        // 数组中，筛选出除了自己之外的同级别部门，然后查找有没有名称一样的部门
+        isRepeat = depts.filter(item => item.pid === this.treeNode.pid && item.id !== this.treeNode.id).some(item => item.name === value)
+      } else {
+        isRepeat = depts.filter(item => item.pid === this.treeNode.id).some(item => item.name === value)
+      }
       // 检测当前输入的名称，与当前操作节点的子级是否有重名,some返回的是布尔值
-      const isRepeat = depts.filter(item => item.pid === this.treeNode.id).some(item => item.name === value)
       isRepeat ? callback(new Error(`当前输入的${value}已在子级目录中存在`)) : callback()
     }
     // 设置一个部门编码的校验函数
     const checkCodeRepeat = async (rule, value, callback) => {
+      let isRepeat = false
       const { depts } = await getDepartments()
-      // 检测当前输入的部门编码，与当前操作节点的子级是否有重名
-      const isRepeat = depts.some(item => item.code === value && value)
+      if (this.formData.id) {
+        // 存在就说明是编辑模式
+        isRepeat = depts.filter(item => item.id !== this.treeNode.id).some(item => item.code === value && value)
+      } else {
+        // 检测当前输入的部门编码，与当前操作节点的子级是否有重名
+        isRepeat = depts.some(item => item.code === value && value)
+      }
       isRepeat ? callback(new Error(`当前输入的${value}已在子级目录中存在`)) : callback()
     }
     return {
@@ -123,12 +136,16 @@ export default {
     btnOk () {
       this.$refs.depts.validate(async isOk => {
         if (isOk) {
-          // 如果校验成功，就把数据返回给后台服务器,且将当前操作节点的id值传给后台，作为子节点的pid值
-          await addDepartments({ ...this.formData, pid: this.treeNode.id })
+          if (this.formData.id) {
+            await updateDepartments(this.formData)
+          } else {
+            // 如果校验成功，且场景为新增部门，就把数据返回给后台服务器,且将当前操作节点的id值传给后台，作为子节点的pid值
+            await addDepartments({ ...this.formData, pid: this.treeNode.id })
+          }
           // 然后渲染页面，并且让弹窗关闭
           this.$emit('addDpats')
           // 点击确定的时候，会触发dialog组件自带的close事件，所以这一行不需要
-          // this.$emit('update:showDialog', false)
+          this.$emit('update:showDialog', false)
         }
       })
     },
