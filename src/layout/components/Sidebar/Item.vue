@@ -1,3 +1,4 @@
+// 函数式组件： 没有data状态，没有响应式数据，只会接收props属性， 没有this， 他就是一个函数
 <script>
 export default {
   name: 'MenuItem',
@@ -12,7 +13,8 @@ export default {
       default: ''
     }
   },
-  render(h, context) {
+  // 通过render函数渲染,与vue产生关系
+  render (h, context) {
     const { icon, title } = context.props
     const vnodes = []
 
@@ -20,7 +22,7 @@ export default {
       if (icon.includes('el-icon')) {
         vnodes.push(<i class={[icon, 'sub-el-icon']} />)
       } else {
-        vnodes.push(<svg-icon icon-class={icon}/>)
+        vnodes.push(<svg-icon icon-class={icon} />)
       }
     }
 

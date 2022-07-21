@@ -35,7 +35,7 @@ request.interceptors.request.use(function (config) {
 // 添加响应拦截器
 request.interceptors.response.use(function (response) {
   // 对响应数据做点什么
-  console.log(response)
+  // console.log(response)
   const { data, message, success } = response.data
   // console.log(data)
   if (success) {
