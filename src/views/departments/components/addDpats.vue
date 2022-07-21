@@ -1,6 +1,6 @@
 <template>
   <!-- 放置弹层的组件 -->
-  <el-dialog title="新增部门" :visible="showDialog" @close="btnCancel">
+  <el-dialog :title="showTitle" :visible="showDialog" @close="btnCancel">
     <!-- 弹层里面的表单 -->
     <el-form ref="depts" label-width="120px" :model="formData" :rules="rules">
       <!-- 部门名称 -->
@@ -107,7 +107,11 @@ export default {
       }
     }
   },
-  computed: {},
+  computed: {
+    showTitle () {
+      return this.formData.id ? '编辑部门' : '增加子部门'
+    }
+  },
   watch: {},
   created () { },
   methods: {
@@ -123,13 +127,17 @@ export default {
           await addDepartments({ ...this.formData, pid: this.treeNode.id })
           // 然后渲染页面，并且让弹窗关闭
           this.$emit('addDpats')
-          // 点击确定的时候，会触发dialog组件自带的close时间，所以这一行不需要
+          // 点击确定的时候，会触发dialog组件自带的close事件，所以这一行不需要
           // this.$emit('update:showDialog', false)
         }
       })
     },
     // 点击取消的时候触发，并且手动清除表单内容
     btnCancel () {
+      // resetFields方法只能清空表单中的数据，并不能清空其他的数据，所以为了实现添加与编辑部门的功能之间的切换，需要手动吧formData的数据改变
+      this.formData = {
+        name: '', code: '', manager: '', introduce: ''
+      }
       this.$refs.depts.resetFields()
       this.$emit('update:showDialog', false)
     },
