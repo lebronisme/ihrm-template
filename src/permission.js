@@ -16,6 +16,7 @@ router.beforeEach((to, from, next) => {
     } else {
       // 如果登陆过了，要去其他页面，就直接放行,并拿到当前页面的数据
       if (!store.state.user.userInfo.id) {
+        // console.log('111')
         store.dispatch('user/getInfoFn')
       }
 

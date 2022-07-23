@@ -15,6 +15,11 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+// 在这里引入全局的组件,传统的写法
+import '@/components/index'
+// 在这里引入全局的组件,新的写法,再在vue中注册
+import Component from '@/components/index'
+Vue.use(Component)
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

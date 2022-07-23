@@ -8,7 +8,9 @@ const mutations = {
   setTokens (state, payload) {
     state.token = payload
   },
-  setUserInfo (state, payload) { state.userInfo = payload },
+  setUserInfo (state, payload) {
+    state.userInfo = payload
+  },
   removeToken (state) {
     // vuex里面的token清除
     state.token = null
@@ -39,9 +41,7 @@ const actions = {
   async getInfoFn (context) {
     const res = await getInfo()
     const res1 = await getUserDetailById(res.userId)
-    // console.log('res', res)
     context.commit('setUserInfo', { ...res, ...res1 })
-    // console.log('res1', res1)
   },
   logout (context) {
     context.commit('removeToken')
