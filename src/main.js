@@ -14,11 +14,16 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import * as filter from '@/filters/index'// 引入过滤器
 
 // 在这里引入全局的组件,传统的写法
 import '@/components/index'
 // 在这里引入全局的组件,新的写法,再在vue中注册
 import Component from '@/components/index'
+
+Object.keys(filter).forEach(key => {
+  Vue.filter(key, filter[key])// 注册全局的过滤器，Object.keys方法，是将filter所有的key拿到，然后组成一个数组
+})
 Vue.use(Component)
 /**
  * If you don't want to use mock-server
