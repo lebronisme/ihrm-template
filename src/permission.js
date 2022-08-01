@@ -5,7 +5,7 @@ import store from '@/store/index'
 // 路由白名单  去这些路由直接放行
 const whiteList = ['/login', '/404']
 // 前置路由守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   NProgress.start()
   const token = store.state.user.token
   if (token) {
@@ -16,11 +16,17 @@ router.beforeEach((to, from, next) => {
     } else {
       // 如果登陆过了，要去其他页面，就直接放行,并拿到当前页面的数据
       if (!store.state.user.userInfo.id) {
-        // console.log('111')
-        store.dispatch('user/getInfoFn')
+        const { roles } = await store.dispatch('user/getInfoFn')
+        // console.log(roles)
+        // newRouter就是得到的动态路由
+        const newRouter = await store.dispatch('permission/filterRouter', roles.menus)
+        console.log(newRouter)
+        // addRoute必须用next（地址）
+        router.addRoutes([...newRouter, { path: '*', redirect: '/404', hidden: true }])// 添加动态路由到路由表
+        next(to.path)
+      } else {
+        next()
       }
-
-      next()
     }
   } else {
     if (whiteList.includes(to.path)) {

@@ -39,8 +39,13 @@
 
               <el-table-column align="center" label="操作">
                 <!-- //这里使用作用域插槽，然后 slot-scope可以获取到表格里面的数据 -->
-                <template slot-scope="{ row }">
-                  <el-button size="small" type="success">分配权限</el-button>
+                <template v-slot="{ row }">
+                  <el-button
+                    size="small"
+                    type="success"
+                    @click="assignPerm(row.id)"
+                    >分配权限</el-button
+                  >
                   <el-button
                     size="small"
                     type="primary"
@@ -115,7 +120,7 @@
             </el-form>
           </el-tab-pane>
         </el-tabs>
-        <!-- 点击编制之后的弹层 -->
+        <!-- 点击编辑之后的弹层 -->
         <el-dialog :title="title" :visible="isDialogShow" @close="btnCancel">
           <el-form
             ref="roleForm"
@@ -131,8 +136,28 @@
             </el-form-item>
           </el-form>
           <el-row slot="footer" type="flex" justify="center">
-            <el-button @click="btnCancel">取 消</el-button>
-            <el-button type="primary" @click="btnOk">确 定</el-button>
+            <el-button>取 消</el-button>
+            <el-button type="primary">确 定</el-button>
+          </el-row>
+        </el-dialog>
+        <!-- 点击分配权限之后的弹层 -->
+        <el-dialog title="分配权限" :visible="isQuanxianShow" @close="permBtnCancel">
+          <el-tree
+            ref="permTree"
+            :data="permData"
+            :props="defaultProps"
+            show-checkbox
+            node-key="id"
+            :default-checked-keys="selectCheck"
+            :check-strictly="true"
+          ></el-tree>
+          <el-row slot="footer" type="flex" justify="center">
+            <el-col :span="6">
+              <el-button size="small" type="primary" @click="permBtnOk"
+                >确定</el-button
+              >
+              <el-button size="small" @click="permBtnCancel">取消</el-button>
+            </el-col>
           </el-row>
         </el-dialog>
       </el-card>
@@ -141,16 +166,25 @@
 </template>
 
 <script>
-import { getRoleList, getCompanyInfo, deleteRole, getRoleDetial, updateRole, addRole } from '@/api/setting'
+import { getRoleList, getCompanyInfo, deleteRole, getRoleDetial, updateRole, addRole, assignPerm } from '@/api/setting'
 import { mapGetters } from 'vuex'
+import { getPermissionList } from '@/api/permission'
+import { tranListToTreeData } from '@/utils/index'
 export default {
   data () {
     return {
       title: '',
+      roleId: null,
       rules: {
         name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }]
       },
       isDialogShow: false,
+      isQuanxianShow: false,
+      defaultProps: {
+        label: 'name'
+      },
+      permData: [], // 专门用来接收权限数据 树形数据
+      selectCheck: [], // 定义一个数组来接收 已经选中的节点
       list: [],
       page: {
         pagesize: 10,
@@ -174,6 +208,25 @@ export default {
     this.getCompanyInfoFn()
   },
   methods: {
+    async permBtnOk () {
+      // this.selectCheck = this.$refs.permTree.getCheckedNodes()
+      await assignPerm({ permIds: this.$refs.permTree.getCheckedKeys(), id: this.roleId })
+      this.$message.success('分配权限成功')
+      this.isQuanxianShow = false
+    },
+    permBtnCancel () {
+      this.selectCheck = []
+      this.isQuanxianShow = false
+    },
+    // 分配权限的函数
+    async assignPerm (id) {
+      this.permData = tranListToTreeData(await getPermissionList(), '0')
+      const { permIds } = await getRoleDetial(id)
+      // 记录下当前角色的id
+      this.roleId = id
+      this.selectCheck = permIds
+      this.isQuanxianShow = true
+    },
     async editRole (id) {
       this.title = '编辑角色'
       this.roleForm = await getRoleDetial(id)// 实现点击的时候，数据回写

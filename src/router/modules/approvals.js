@@ -3,7 +3,6 @@ import layout from '@/layout'
 // 默认导出路由规则
 export default {
   path: '/approvals', // 路由的路径
-
   component: layout,
   children: [
     {

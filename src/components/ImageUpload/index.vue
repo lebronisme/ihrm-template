@@ -28,8 +28,8 @@
 <script>
 import COS from 'cos-js-sdk-v5'
 var cos = new COS({
-  SecretId: 'AKIDYyBBdtvkMlxvfKvKXaT9csvkMlwtdAlD', // 身份识别 ID
-  SecretKey: 'RedOvFKBoDOL4ZqukMjrnV3NTLyNXS9c' // 身份密钥
+  SecretId: 'AKIDPeeNq2yd18yYshEVVEhuqUrxnNgiTxA6', // 身份识别 ID
+  SecretKey: 'h7G7h14qKYWEfqkNincAd4LM7duvgCTV' // 身份密钥
 })
 export default {
   name: 'ImageUpload',

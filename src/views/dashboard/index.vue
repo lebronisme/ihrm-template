@@ -6,9 +6,20 @@
 </template>
 
 <script>
+// const obj = {
+//   created () {
+//     alert(1)
+//   }
+// }
 import { mapGetters } from 'vuex'
 // import PageTools from '@/components/PageTools'
 export default {
+  // mixins: [obj],
+  data () {
+    return {
+
+    }
+  },
   // name: 'Dashboard',
   // components: { PageTools },
   computed: {

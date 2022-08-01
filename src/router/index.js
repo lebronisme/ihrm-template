@@ -70,10 +70,9 @@ export const constantRoutes = [
         path: '', // 二级路由什么都不写，为默认二级路径
         component: () => import('@/views/import')
       }]
-  },
+  }
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
-
+// 放在了动态路由，permission里面
 ]
 // 自定义的动态路由，之所以没有放在静态路里面，是为了方便后期维护
 export const asyncRouter = [approvalsRouter,
@@ -88,7 +87,7 @@ export const asyncRouter = [approvalsRouter,
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }), // 管理滚动行为，如果出现滚动切换，就让页面回到顶部
-  routes: [...constantRoutes, ...asyncRouter]// 数组合并，将静态路由与动态路由临时合并
+  routes: [...constantRoutes]// 数组合并，将静态路由与动态路由临时合并
 })
 
 const router = createRouter()// 实例化一个路由   相当于const router =new Router（）

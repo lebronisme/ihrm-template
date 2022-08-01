@@ -21,7 +21,11 @@
             </span>
             <!-- 具名插槽 -->
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="add">添加子部门</el-dropdown-item>
+              <el-dropdown-item
+                command="add"
+                :disabled="!checkPermission('add-adpt')"
+                >添加子部门</el-dropdown-item
+              >
               <!-- 编辑部门和删除部门只会在子节点上显示 -->
               <el-dropdown-item v-if="!isRoot" command="edit"
                 >编辑部门</el-dropdown-item
